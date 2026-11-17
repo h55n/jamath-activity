@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install real Sugar and pygame dependencies
         run: |
           sudo apt-get update
@@ -18,6 +20,6 @@ jobs:
         run: |
           /usr/bin/python3 -m py_compile juego.py tests/test_game_timing.py
           /usr/bin/python3 -m flake8 tests/test_game_timing.py
-          git diff --check HEAD^
+          git diff --check 3aaaf0d891c4a0d857e6dffc1832dd5fe7a2a4b6
       - name: Run all timing regression cases
         run: /usr/bin/python3 -m unittest discover -s tests -v
