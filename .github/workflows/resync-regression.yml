@@ -1,0 +1,25 @@
+name: Sugargame resync regression
+on:
+  push:
+    branches: [verify/sugargame-resync-45]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install real Sugar, GTK and pygame dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-sugar3 python3-pygame python3-gi gir1.2-gtk-3.0 python3-flake8 xvfb
+      - name: Compile and lint tests
+        run: |
+          /usr/bin/python3 -m py_compile juego.py sugargame/*.py tests/*.py
+          /usr/bin/python3 -m flake8 tests
+          git diff --check 9da3bac17b2e6ff59295a1345a7a7ae525944110
+      - name: Run keyboard, resize and clock regressions
+        run: xvfb-run -a /usr/bin/python3 -m unittest discover -s tests -v
